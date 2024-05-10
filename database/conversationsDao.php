@@ -79,11 +79,11 @@ class ConversationsDao extends Dao
      * - For each conversations, include a CSV list of user_ids, usernames, and alias, 
      *   as well as an indicator of whether the convo includes participants on both 
      *   the analog and MCC. These fields are expected by the Conversation object to 
-     *   avoid having to perfom separate queries. 
+     *   avoid having to perform separate queries. 
      *
      * @param int $userId (optional)
      * @param bool $includePrivate (optional) include private convos by default.
-     * @return array Converation objects.
+     * @return array Conversation objects.
      */
     public function getConversations($userId = null, bool $includePrivate = true)
     {
@@ -93,33 +93,39 @@ class ConversationsDao extends Dao
         if($userId != null)
         {
             $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
-            $qWhere[]  = 'conversations.conversation_id IN ( '.
-                            'SELECT participants.conversation_id FROM participants '.
-                            'WHERE participants.user_id='.$qUserId.' ) ';
+            $qWhere[]  = "{$this->prefix}conversations.conversation_id IN ( ".
+                            "SELECT {$this->prefix}participants.conversation_id FROM ".
+                                "{$this->prefix}participants ".
+                            "WHERE {$this->prefix}participants.user_id={$qUserId} ) ";
         }
 
         // Additional clause if private conversations are to be included.
         if(!$includePrivate)
         {
             $convos = $this->getGlobalConvos();
-            $qWhere[] = 'conversations.conversation_id IN ('.join(', ', $convos).') ';
+            $qWhere[] = "{$this->prefix}conversations.conversation_id IN ". 
+                "(".join(', ', $convos).") ";
         }
 
         // Combine all WHERE clauses together. 
         $qWhere = (count($qWhere) > 0) ? 'WHERE '.join(' AND ', $qWhere) : '';
 
-        $queryStr = 'SELECT conversations.*, '.
-                    'GROUP_CONCAT( participants.user_id) AS participants_id, '.
-                    'GROUP_CONCAT( users.username) AS participants_username, '.
-                    'GROUP_CONCAT( users.alias) AS participants_alias, '.
-                    'GROUP_CONCAT( users.is_crew) AS participants_is_crew, '.
-                    'GROUP_CONCAT( users.is_active) AS participants_is_active, '.
-                    'COUNT(DISTINCT users.is_crew) AS participants_both_sites '.
-                    'FROM conversations '.
-                    'JOIN participants ON conversations.conversation_id = participants.conversation_id '.
-                    'JOIN users ON users.user_id=participants.user_id '.
+        $queryStr = 'SELECT '.$this->prefix.'conversations.*, '.
+                        "GROUP_CONCAT( {$this->prefix}participants.user_id) AS participants_id, ".
+                        "GROUP_CONCAT( {$this->prefix}users.username) AS participants_username, ".
+                        "GROUP_CONCAT( {$this->prefix}users.alias) AS participants_alias, ".
+                        "GROUP_CONCAT( {$this->prefix}users.is_crew) AS participants_is_crew, ".
+                        "GROUP_CONCAT( {$this->prefix}users.is_active) AS participants_is_active, ".
+                        "COUNT(DISTINCT {$this->prefix}users.is_crew) AS participants_both_sites ".
+                    "FROM {$this->prefix}conversations ".
+                    "JOIN {$this->prefix}participants ON ". 
+                        "{$this->prefix}conversations.conversation_id = ". 
+                        "{$this->prefix}participants.conversation_id ".
+                    "JOIN {$this->prefix}users ON ". 
+                        "{$this->prefix}users.user_id={$this->prefix}participants.user_id ".
                     $qWhere.
-                    'GROUP BY conversations.conversation_id ORDER BY conversations.conversation_id';
+                    "GROUP BY {$this->prefix}conversations.conversation_id ". 
+                    "ORDER BY {$this->prefix}conversations.conversation_id";
 
         $conversations = array();
 
@@ -220,20 +226,26 @@ class ConversationsDao extends Dao
 
         $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
 
-        $queryStr = 'SELECT conversations.*, '.
-            'GROUP_CONCAT( participants.user_id) AS participants_id, '.
-            'GROUP_CONCAT( users.username) AS participants_username, '.
-            'GROUP_CONCAT( users.alias) AS participants_alias, '.
-            'GROUP_CONCAT( users.is_crew) AS participants_is_crew, '.
-            'COUNT(DISTINCT users.is_crew) AS participants_both_sites '.
-            'FROM conversations '.
-            'JOIN participants ON conversations.conversation_id = participants.conversation_id '.
-            'JOIN users ON users.user_id=participants.user_id '.
-            'WHERE conversations.conversation_id NOT IN ('.$qConvoIds.') '. 
-                'AND conversations.conversation_id IN ( '.
-                    'SELECT participants.conversation_id FROM participants '.
-                    'WHERE participants.user_id='.$qUserId.' ) '.
-            'GROUP BY conversations.conversation_id ORDER BY conversations.conversation_id';
+        $queryStr = "SELECT {$this->prefix}conversations.*, " .
+                        "GROUP_CONCAT({$this->prefix}participants.user_id) AS participants_id, " .
+                        "GROUP_CONCAT({$this->prefix}users.username) AS participants_username, " .
+                        "GROUP_CONCAT({$this->prefix}users.alias) AS participants_alias, " .
+                        "GROUP_CONCAT({$this->prefix}users.is_crew) AS participants_is_crew, " .
+                        "COUNT(DISTINCT {$this->prefix}users.is_crew) AS participants_both_sites " .
+                    "FROM {$this->prefix}conversations " .
+                    "JOIN {$this->prefix}participants ON ". 
+                        "{$this->prefix}conversations.conversation_id = ". 
+                        "{$this->prefix}participants.conversation_id " .
+                    "JOIN {$this->prefix}users ON ". 
+                        "{$this->prefix}users.user_id={$this->prefix}participants.user_id " .
+                    "WHERE {$this->prefix}conversations.conversation_id NOT IN ({$qConvoIds}) " .
+                        "AND {$this->prefix}conversations.conversation_id IN ( " .
+                            "SELECT {$this->prefix}participants.conversation_id ". 
+                            "FROM {$this->prefix}participants " .
+                            "WHERE {$this->prefix}participants.user_id={$qUserId} ) " .
+                    "GROUP BY {$this->prefix}conversations.conversation_id ". 
+                    "ORDER BY {$this->prefix}conversations.conversation_id";
+
         
         $conversations = array();
 
@@ -241,7 +253,7 @@ class ConversationsDao extends Dao
         {
             if($result->num_rows > 0)
             {
-                // Retreieve results from query
+                // Retrieve results from query
                 while(($conversationData=$result->fetch_assoc()) != null)
                 {
                     $conversations[$conversationData['conversation_id']] = 
@@ -276,9 +288,9 @@ class ConversationsDao extends Dao
     {
         $qConvoId = '\''.$this->database->prepareStatement($convoId).'\'';
 
-        $queryStr = 'UPDATE conversations SET '. 
-            'last_message=UTC_TIMESTAMP(3) '. 
-            'WHERE conversation_id='.$qConvoId;
+        $queryStr = "UPDATE {$this->prefix}conversations SET ". 
+            "last_message=UTC_TIMESTAMP(3) ". 
+            "WHERE conversation_id={$qConvoId}";
                 
         return ($this->database->query($queryStr) !== false);
     }

@@ -51,10 +51,14 @@ class MessageFileDao extends Dao
         
         // Get files with the matching message_id and ensure the user is
         // part of the conversation (thus having read access).
-        $queryStr = 'SELECT msg_files.* FROM msg_files '.
-                    'JOIN messages ON messages.message_id=msg_files.message_id '.
-                    'JOIN participants ON participants.conversation_id=messages.conversation_id '.
-                    'WHERE msg_files.message_id='.$qMessageId.' AND participants.user_id='.$qUserId;
+        $queryStr = "SELECT {$this->prefix}msg_files.* " .
+        "FROM {$this->prefix}msg_files " .
+        "JOIN {$this->prefix}messages " .
+        "ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id " .
+        "JOIN {$this->prefix}participants " .
+        "ON {$this->prefix}participants.conversation_id={$this->prefix}messages.conversation_id " .
+        "WHERE {$this->prefix}msg_files.message_id={$qMessageId} " .
+        "AND {$this->prefix}participants.user_id={$qUserId}";
 
         $file = null;
 

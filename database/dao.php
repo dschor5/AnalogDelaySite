@@ -22,6 +22,13 @@ abstract class Dao
     private $name;
 
     /**
+     * Table prefix used
+     * @access protected
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * Name of primary id for the table.
      * @access private
      * @var string
@@ -29,7 +36,7 @@ abstract class Dao
     private $id;
 
     /**
-     * Search for any of these keyrods. 
+     * Search for any of these keywords. 
      * @access private
      * @var int
      */
@@ -60,6 +67,7 @@ abstract class Dao
         $this->database = Database::getInstance();
         $this->name     = $name;
         $this->id       = $id;
+        $this->prefix   = $this->database->getPrefix();
     }
 
     /**
@@ -91,7 +99,7 @@ abstract class Dao
     public function drop($id = '*') : bool
     {
         // Build query for this table. 
-        $query = "delete from `{$this->name}`";
+        $query = "delete from `{$this->prefix}{$this->name}`";
 
         // If the id (int) is provided, then delete that row only. 
         if (intval($id) > 0)
@@ -117,7 +125,7 @@ abstract class Dao
      *                      Default to '*' which would select all rows.
      * @param string|array $sort  Name of field(s) to sort results by.
      * @param string|array $order 'ASC' or 'DSC' order to sort each of the $sort fields.
-     * @param int $limist_start Select subset of matched rows. 
+     * @param int $limit_start Select subset of matched rows. 
      *                      Limit start is the index of the first row to return. 
      *                      Default to null which means use database default.
      * @param int $limit_count Select number of rows to return. 
@@ -128,7 +136,7 @@ abstract class Dao
         string $order = 'ASC', ?int $limit_start = null, ?int $limit_count = null) 
     {
         // Form query string for this table. 
-        $query = "select $what from `{$this->name}`";
+        $query = "select $what from `{$this->prefix}{$this->name}`";
 
         // Integer where clause means select by primary id. 
         if (intval($where) > 0)
@@ -190,7 +198,7 @@ abstract class Dao
     public function insert(array $fields, array $variables=array()) 
     {
         // Build query string
-        $query = "insert into `{$this->name}` (";
+        $query = "insert into `{$this->prefix}{$this->name}` (";
 
         // Get all fields to enter
         $keys = array();
@@ -283,8 +291,8 @@ abstract class Dao
         }
 
         // Create query. 
-        $query = 'INSERT INTO `'.$this->name.'` '.
-                    '('.$keysStr.') VALUES '.join(',', $valuesStr).';';
+        $query = "INSERT INTO `{$this->prefix}{$this->name}` ".
+                    "({$keysStr}) VALUES ".join(',', $valuesStr).";";
 
         
         if ($this->database->query($query, false))
@@ -307,7 +315,7 @@ abstract class Dao
     public function update(array $fields, string $where = '*')
     {
         // Build update query 
-        $query = "update `{$this->name}` set ";
+        $query = "update `{$this->prefix}{$this->name}` set ";
 
         // Sanitize values to update based on the key-value pairs.
         $tmp = array();

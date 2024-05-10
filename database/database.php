@@ -10,7 +10,7 @@
 class Database
 {
     /**
-     * Reference to databsae object. 
+     * Reference to database object. 
      * @access private
      * @var mysqli 
      */
@@ -38,6 +38,13 @@ class Database
     private $throwException;
 
     /**
+     * Table prefix to use.
+     * @access private
+     * @var string
+     */
+    private $prefix;
+
+    /**
      * Singleton instance of Database object.
      * @access private
      * @var Object
@@ -51,13 +58,16 @@ class Database
      * @param string $pass Password for database connection
      * @param string $dbname Database name
      * @param string $hostname Hostname where database is stored
+     * @param string $tblprefix Optinal prefix for all tables in the database
      */
-    private function __construct(string $user, string $pass, string $dbname, string $hostname)
+    private function __construct(string $user, string $pass, 
+        string $dbname, string $hostname,  string $tblprefix='')
     {
         // Initialize variables
         $this->query_count = 0;
         $this->query_time = 0;
         $this->throwException = false;
+        $this->prefix = $tblprefix;
         
         // Establish databse connection.
         $this->db = new mysqli($hostname, $user, $pass, $dbname);
@@ -95,6 +105,16 @@ class Database
         }
 
         return self::$instance;
+    }
+
+    /**
+     * Get the table prefix. 
+     * 
+     * @return string Table prefix. 
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 
     /**

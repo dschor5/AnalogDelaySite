@@ -80,16 +80,19 @@ class MessagesDao extends Dao
             $this->database->query($idQueryStr);
             
             // Update id for messages from the perspective of the habitat
-            $updateQueryStr = 'UPDATE messages SET messages.message_id_alt=@id_hab:=@id_hab+1 '. 
-                'WHERE messages.conversation_id IN ('.$qConvoIds.') AND messages.from_crew=1 ';
-                'ORDER BY IF(messages.from_crew, messages.recv_time_hab, messages.recv_time_mcc) ASC';
+            $updateQueryStr = "UPDATE {$this->prefix}messages " .
+                "SET {$this->prefix}messages.message_id_alt=@id_hab:=@id_hab+1 " .
+                "WHERE {$this->prefix}messages.conversation_id IN ({$qConvoIds}) AND {$this->prefix}messages.from_crew=1 " .
+                "ORDER BY IF({$this->prefix}messages.from_crew, {$this->prefix}messages.recv_time_hab, {$this->prefix}messages.recv_time_mcc) ASC";
             $this->database->query($updateQueryStr);
-            
+
             // Update id for messages from the perspective of mcc
-            $updateQueryStr = 'UPDATE messages SET messages.message_id_alt=@id_mcc:=@id_mcc+1 '. 
-                'WHERE messages.conversation_id IN ('.$qConvoIds.') AND messages.from_crew=0 ';
-                'ORDER BY IF(messages.from_crew, messages.recv_time_hab, messages.recv_time_mcc) ASC';
+            $updateQueryStr = "UPDATE {$this->prefix}messages " .
+                "SET {$this->prefix}messages.message_id_alt=@id_mcc:=@id_mcc+1 " .
+                "WHERE {$this->prefix}messages.conversation_id IN ({$qConvoIds}) AND {$this->prefix}messages.from_crew=0 " .
+                "ORDER BY IF({$this->prefix}messages.from_crew, {$this->prefix}messages.recv_time_hab, {$this->prefix}messages.recv_time_mcc) ASC";
             $this->database->query($updateQueryStr);
+
         }        
 
         Logger::info('MessagesDao::renumberSiteMessageId() complete.');
@@ -119,9 +122,11 @@ class MessagesDao extends Dao
             $this->startTransaction();
             
             // Define query to find the next alternate id to assign to the new message
-            $idQueryStr = 'SELECT @id_alt := COALESCE(MAX(message_id_alt),0) FROM messages '. 
-                'WHERE conversation_id="'.$this->database->prepareStatement($msgData['conversation_id']).'" '. 
-                'AND from_crew='.(($user->is_crew)?'1':'0');
+            $idQueryStr = "SELECT @id_alt := COALESCE(MAX(message_id_alt),0) " .
+                "FROM {$this->prefix}messages " .
+                "WHERE conversation_id=\"". 
+                    "{$this->database->prepareStatement($msgData['conversation_id'])}\" " .
+                "AND from_crew=" . (($user->is_crew) ? '1' : '0');
             $this->database->query($idQueryStr);
 
             $habDelay = 0.0;
@@ -250,18 +255,19 @@ class MessagesDao extends Dao
         $qUserId  = '\''.$this->database->prepareStatement($userId).'\'';
         $qRefTime = $isCrew ? 'recv_time_hab' : 'recv_time_mcc';
 
-        $queryStr = 'SELECT messages.message_id '. 
-                        // 'users.username, users.alias, users.is_active, '.
-                        // 'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    // 'JOIN users ON users.user_id=messages.user_id '.
-                    // 'LEFT JOIN msg_status ON messages.message_id=msg_status.message_id '.
-                    //     'AND msg_status.user_id='.$qUserId.' '.
-                    // 'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.conversation_id IN ('.$qConvoIds.') '.
-                        'AND messages.'.$qRefTime.' <= UTC_TIMESTAMP(3) '.
-                    'ORDER BY messages.'.$qRefTime.' DESC, messages.message_id DESC '.
-                    'LIMIT 1, 1';
+        $queryStr = "SELECT messages.message_id " .
+            // "users.username, users.alias, users.is_active, " .
+            // "msg_files.original_name, msg_files.server_name, msg_files.mime_type " .
+            "FROM {$this->prefix}messages " .
+            // "JOIN {$this->prefix}users ON {$this->prefix}users.user_id={$this->prefix}messages.user_id " .
+            // "LEFT JOIN {$this->prefix}msg_status ON {$this->prefix}messages.message_id={$this->prefix}msg_status.message_id " .
+            //     "AND {$this->prefix}msg_status.user_id={$qUserId} " .
+            // "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id " .
+            "WHERE {$this->prefix}messages.conversation_id IN ({$qConvoIds}) " .
+                "AND {$this->prefix}messages.{$qRefTime} <= UTC_TIMESTAMP(3) " .
+            "ORDER BY {$this->prefix}messages.{$qRefTime} DESC, ". 
+                "{$this->prefix}messages.message_id DESC " .
+            "LIMIT 1, 1";
 
         $this->startTransaction();
 

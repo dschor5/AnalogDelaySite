@@ -51,10 +51,11 @@ class ArchiveDao extends Dao
         
         // Get files with the matching archive_id and ensure the user is
         // an admin that can read the archive.
-        $queryStr = 'SELECT mission_archives.* '. 
-                    'FROM `mission_archives`, `users` '. 
-                    'WHERE mission_archives.archive_id='.$qArchiveId.' AND '. 
-                    'users.user_id='.$qUserId.' AND users.is_admin=1';
+        $queryStr = "SELECT mission_archives.* ". 
+                    "FROM `{$this->prefix}mission_archives`, `{$this->prefix}users` ". 
+                    "WHERE {$this->prefix}mission_archives.archive_id={$qArchiveId} AND ". 
+                    "{$this->prefix}users.user_id={$qUserId} AND ". 
+                    "{$this->prefix}users.is_admin=1";
 
         $file = null;
 
