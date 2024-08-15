@@ -1,4 +1,11 @@
-CREATE TABLE `users` (
+START TRANSACTION;
+
+-- Define the prefix
+SET @prefix = 'test1';
+
+-- Create Users table
+SET @table_structure = "
+CREATE TABLE %susers (
   `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
   `alias` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
@@ -12,8 +19,15 @@ CREATE TABLE `users` (
   `preferences` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `conversations` (
+-- Create Conversations table
+SET @table_structure = "
+CREATE TABLE %sconversations (
   `conversation_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(130) COLLATE utf8_unicode_ci NOT NULL,
   `parent_conversation_id` int(11) UNSIGNED NULL DEFAULT NULL,
@@ -21,16 +35,30 @@ CREATE TABLE `conversations` (
   `last_message` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`conversation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `participants` (
+-- Create Participants table
+SET @table_structure = "
+CREATE TABLE %sparticipants (
   `conversation_id` int(10) UNSIGNED NOT NULL ,
   `user_id` int(10) UNSIGNED NOT NULL COMMENT 'Participant',
   PRIMARY KEY (`conversation_id`, `user_id`),
-  FOREIGN KEY(`conversation_id`) REFERENCES conversations(`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY(`user_id`) REFERENCES users(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE  
+  FOREIGN KEY(`conversation_id`) REFERENCES %sconversations(`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(`user_id`) REFERENCES %susers(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `messages` (
+-- Create Messages table
+SET @table_structure = "
+CREATE TABLE %smessages (
   `message_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(10) UNSIGNED NOT NULL COMMENT 'Author',
   `conversation_id` int(10) UNSIGNED NOT NULL ,
@@ -41,36 +69,62 @@ CREATE TABLE `messages` (
   `recv_time_hab` datetime NOT NULL,
   `recv_time_mcc` datetime NOT NULL,
   PRIMARY KEY(`message_id`, `user_id`, `conversation_id`),
-  FOREIGN KEY(`conversation_id`) REFERENCES conversations(`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY(`user_id`) REFERENCES users(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY(`conversation_id`) REFERENCES %sconversations(`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(`user_id`) REFERENCES %susers(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `msg_status` (
+-- Create Msg Status table
+SET @table_structure = "
+CREATE TABLE %smsg_status (
   `message_id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL COMMENT 'Recipient',
   PRIMARY KEY(`message_id`, `user_id`),
-  FOREIGN KEY(`user_id`) REFERENCES users(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY(`message_id`) REFERENCES messages(`message_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY(`user_id`) REFERENCES %susers(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(`message_id`) REFERENCES %smessages(`message_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `msg_files` (
+-- Create Msg Files table
+SET @table_structure = "
+CREATE TABLE %smsg_files (
   `message_id` int(10) UNSIGNED NOT NULL,
   `server_name` text CHARACTER SET utf8 NOT NULL,
   `original_name` text CHARACTER SET utf8 NOT NULL,
   `mime_type` text CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY(`message_id`),
-  FOREIGN KEY(`message_id`) REFERENCES messages(`message_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY(`message_id`) REFERENCES %smessages(`message_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `mission_config` (
-  `name` varchar(32) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+-- Create Mission Config table
+SET @table_structure = "
+CREATE TABLE %smission_config (  `name` varchar(32) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
   `value` text CHARACTER SET utf8 NOT NULL,
   `type` enum('string','int','float','bool', 'json') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY(`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE TABLE `mission_archives` (
-  `archive_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+-- Create Mission Archives table
+SET @table_structure = "
+CREATE TABLE %smission_archives (  `archive_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `server_name` text CHARACTER SET utf8 NOT NULL,
   `notes` text CHARACTER SET utf8 NOT NULL,
   `mime_type` text CHARACTER SET utf8 NOT NULL,
@@ -78,8 +132,14 @@ CREATE TABLE `mission_archives` (
   `content_tz` varchar(64) COLLATE utf8_unicode_ci NOT NULL, 
   PRIMARY KEY(`archive_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+";
+SET @sql = REPLACE(@table_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-INSERT INTO `mission_config` (`name`, `type`, `value`) VALUES
+SET @insert_structure = "
+INSERT INTO `%smission_config` (`name`, `type`, `value`) VALUES
 ('name',               'string', 'Analog Mission Name'),
 ('date_start',         'string', '2021-08-10 00:00:00'),
 ('date_end',           'string', '2021-11-10 00:00:00'),
@@ -93,7 +153,7 @@ INSERT INTO `mission_config` (`name`, `type`, `value`) VALUES
 ('hab_timezone',       'string', 'America/Chicago'),
 ('hab_day_name',       'string', 'Mission Day'),
 ('delay_type',         'string', 'manual'),
-('delay_config',       'json', '[{"ts":"2021-01-01 00:00:00","eq":0}]'),
+('delay_config',       'json', '[{\"ts\":\"2021-01-01 00:00:00\",\"eq\":0}]'),
 ('login_timeout',      'int',    '3600'),
 ('feat_audio_notification',  'bool', '1'),
 ('feat_badge_notification',  'bool', '1'),
@@ -105,47 +165,41 @@ INSERT INTO `mission_config` (`name`, `type`, `value`) VALUES
 ('feat_important_msgs',      'bool', '1'),
 ('feat_convo_threads',       'bool', '1'), 
 ('feat_convo_threads_all',   'bool', '1'),
-('debug',                    'bool', '0');
+('feat_out_of_seq',          'bool', '1'),
+('debug',                    'bool', '0'),
+('mysql_debug',              'bool', '0');
+";
+SET @sql = REPLACE(@insert_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-INSERT INTO `users` (`user_id`, `username`, `alias`, `password`, `session_id`, `is_admin`, `is_crew`, `last_login`, `is_password_reset`, `preferences`) VALUES
+
+SET @insert_structure = "
+INSERT INTO `%susers` (`user_id`, `username`, `alias`, `password`, `session_id`, `is_admin`, `is_crew`, `last_login`, `is_password_reset`, `preferences`) VALUES
 (1, 'admin', 'Admin', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', NULL, 1, 0, '2021-07-23 14:52:17', 1, '');
+";
+SET @sql = REPLACE(@insert_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-INSERT INTO `conversations` (`conversation_id`, `name`, `parent_conversation_id`, `date_created`, `last_message`) VALUES
+SET @insert_structure = "
+INSERT INTO `%sconversations` (`conversation_id`, `name`, `parent_conversation_id`, `date_created`, `last_message`) VALUES
 (1, 'Mission Chat', NULL, '2021-07-23 14:57:49', NOW());
+";
+SET @sql = REPLACE(@insert_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-INSERT INTO `participants` (`conversation_id`, `user_id`) VALUES
+SET @insert_structure = "
+INSERT INTO `%sparticipants` (`conversation_id`, `user_id`) VALUES
 (1, 1);
+";
+SET @sql = REPLACE(@insert_structure, '%s', @prefix);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-/* The following values are used for testing only and should not be deployed by default. */
-
-INSERT INTO `users` (`user_id`, `username`, `alias`, `password`, `session_id`, `is_admin`, `is_crew`, `last_login`, `is_password_reset`, `preferences`) VALUES
-(2, 'user1', 'Flight Director', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', NULL, 0, 0, NULL, 1, ''),
-(3, 'user2', 'Blueberry', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', NULL, 0, 1, NULL, 1, ''),
-(4, 'user3', 'Tangerine', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', NULL, 0, 1, NULL, 1, '');
-
-
-INSERT INTO `conversations` (`conversation_id`, `name`, `parent_conversation_id`, `date_created`, `last_message`) VALUES
-(2, 'Admin-Flight Director', NULL, '2021-08-03 23:14:48', NOW()),
-(3, 'Admin-Blueberry', NULL, '2021-08-03 23:14:59', NOW()),
-(4, 'Flight Director-Blueberry', NULL, '2021-08-03 23:14:59', NOW()),
-(5, 'Admin-Tangerine', NULL, '2021-08-03 23:15:07', NOW()),
-(6, 'Flight Director-Tangerine', NULL, '2021-08-03 23:15:07', NOW()),
-(7, 'Blueberry-Tangerine', NULL, '2021-08-03 23:15:07', NOW());
-
-
-INSERT INTO `participants` (`conversation_id`, `user_id`) VALUES
-(1, 2),
-(1, 3),
-(1, 4),
-(2, 1),
-(2, 2),
-(3, 1),
-(3, 3),
-(4, 2),
-(4, 3),
-(5, 1),
-(5, 4),
-(6, 2),
-(6, 4),
-(7, 3),
-(7, 4);
+COMMIT;

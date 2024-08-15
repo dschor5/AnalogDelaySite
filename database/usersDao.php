@@ -68,10 +68,11 @@ class UsersDao extends Dao
         else
         {
             // Query database.
-            $queryStr = 'SELECT users.*, ('. 
-                            'SELECT GROUP_CONCAT(participants.conversation_id) FROM participants '. 
-                            'WHERE participants.user_id=users.user_id) AS conversations '. 
-                        'FROM users WHERE users.user_id='.$id;
+            $queryStr = 
+                "SELECT {$this->prefix}users.*, (". 
+                    "SELECT GROUP_CONCAT({$this->prefix}participants.conversation_id) "."FROM {$this->prefix}participants ". 
+                    "WHERE {$this->prefix}participants.user_id={$this->prefix}users.user_id) AS conversations ". 
+                "FROM {$this->prefix}users WHERE {$this->prefix}users.user_id=".$id;
 
             if (($result = $this->database->query($queryStr)) !== false)
             {
@@ -112,16 +113,16 @@ class UsersDao extends Dao
             // Query database for user.
             $qUsername = '\''.$this->database->prepareStatement($username).'\'';
 
-            $queryStr = 'SELECT users.*, ('. 
-                            'SELECT GROUP_CONCAT(participants.conversation_id) FROM participants '. 
-                            'WHERE participants.user_id=users.user_id) AS conversations '. 
-                        'FROM users WHERE users.username='.$qUsername;
+            $queryStr = "SELECT {$this->prefix}users.*, (". 
+                            "SELECT GROUP_CONCAT({$this->prefix}participants.conversation_id) FROM {$this->prefix}participants ". 
+                            "WHERE {$this->prefix}participants.user_id={$this->prefix}users.user_id) AS conversations ". 
+                        "FROM {$this->prefix}users WHERE {$this->prefix}users.username=".$qUsername;
             
             // If provided, the session id must also match for the query to succeed. 
             if($session_id != null)
             {
                 $qSessionId = '\''.$this->database->prepareStatement($session_id).'\'';
-                $queryStr .= ' AND users.session_id='.$qSessionId.' AND users.is_active=1 ';
+                $queryStr .= " AND {$this->prefix}users.session_id=".$qSessionId." AND {$this->prefix}users.is_active=1 ";
             }   
 
             if (($result = $this->database->query($queryStr)) !== false)
@@ -305,10 +306,10 @@ class UsersDao extends Dao
         $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
         $qSessionId = '\''.$this->database->prepareStatement($sessionId).'\'';
 
-        $queryStr = 'UPDATE users SET '. 
-            'session_id='.$qSessionId.', '. 
-            'last_login=UTC_TIMESTAMP(3) '. 
-            'WHERE user_id='.$qUserId;
+        $queryStr = "UPDATE {$this->prefix}users SET ". 
+            "session_id=".$qSessionId.", ". 
+            "last_login=UTC_TIMESTAMP(3) ". 
+            "WHERE user_id=".$qUserId;
                 
         return ($this->database->query($queryStr) !== false);
     }
@@ -318,11 +319,11 @@ class UsersDao extends Dao
         $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
         $qPassword = '\''.$this->database->prepareStatement($newPassword).'\'';
 
-        $queryStr = 'UPDATE users SET '. 
-            'password='.$qPassword.', '. 
-            'is_password_reset='.($forceReset ? '1' : '0').', '.
-            'last_login=NULL '.
-            'WHERE user_id='.$qUserId;
+        $queryStr = "UPDATE {$this->prefix}users SET ". 
+            "password=".$qPassword.", ". 
+            "is_password_reset=".($forceReset ? "1" : "0").", ".
+            "last_login=NULL ".
+            "WHERE user_id=".$qUserId;
 
         return ($this->database->query($queryStr) !== false);
     }
@@ -332,9 +333,9 @@ class UsersDao extends Dao
         $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
         $qActive = $active ? '1' : '0';
 
-        $queryStr = 'UPDATE users SET '. 
-            'is_active='.$qActive.' '. 
-            'WHERE user_id='.$qUserId;
+        $queryStr = "UPDATE {$this->prefix}users SET ". 
+            "is_active=".$qActive." ". 
+            "WHERE user_id=".$qUserId;
                 
         return ($this->database->query($queryStr) !== false);
     }

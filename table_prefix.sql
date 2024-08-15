@@ -20,8 +20,8 @@ FROM information_schema.TABLES WHERE TABLE_SCHEMA = @database;
 ###############################################
 # Add table prefix
 ###############################################
-SET @database = "database_name";
-SET @prefix   = "prefix_";
+SET @database = "db_echo";
+SET @prefix   = "echo1_";
  
 SELECT
     concat(

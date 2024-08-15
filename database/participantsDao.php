@@ -60,10 +60,10 @@ class ParticipantsDao extends Dao
         {
             $qConvoId = '\''.$this->database->prepareStatement($convoId).'\'';
 
-            $queryStr = 'SELECT participants.user_id, users.is_crew '.
-                        'FROM participants, users '.
-                        'WHERE users.user_id=participants.user_id '. 
-                            'AND participants.conversation_id='.$qConvoId;
+            $queryStr = "SELECT {$this->prefix}participants.user_id, {$this->prefix}users.is_crew ".
+                        "FROM {$this->prefix}participants, {$this->prefix}users ".
+                        "WHERE {$this->prefix}users.user_id={$this->prefix}participants.user_id ". 
+                            "AND {$this->prefix}participants.conversation_id=".$qConvoId;
             
             self::$cache[$convoId] = array();
 
@@ -91,12 +91,12 @@ class ParticipantsDao extends Dao
     public function getConvosWithSingleParticipant() : array
     {
         // Query to get all conversations that excludes conversation_id=1 (mission chat) and its threads.
-        $queryStr = 'SELECT participants.conversation_id, COUNT(participants.user_id) AS active_participants '.
-                    'FROM participants '. 
-                    'JOIN conversations ON participants.conversation_id=conversations.conversation_id '.
-                    'WHERE conversations.conversation_id != 1 AND '. 
-                        '(conversations.parent_conversation_id IS NULL OR conversations.parent_conversation_id != 1) '.
-                    'GROUP BY participants.conversation_id HAVING active_participants = 1';
+        $queryStr = "SELECT {$this->prefix}participants.conversation_id, COUNT({$this->prefix}participants.user_id) AS active_participants ".
+                    "FROM {$this->prefix}participants ". 
+                    "JOIN {$this->prefix}conversations ON {$this->prefix}participants.conversation_id={$this->prefix}conversations.conversation_id ".
+                    "WHERE {$this->prefix}conversations.conversation_id != 1 AND ". 
+                        "({$this->prefix}conversations.parent_conversation_id IS NULL OR {$this->prefix}conversations.parent_conversation_id != 1) ".
+                    "GROUP BY {$this->prefix}participants.conversation_id HAVING active_participants = 1";
 
         $convoIds = array();
 

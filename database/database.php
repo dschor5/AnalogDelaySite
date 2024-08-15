@@ -101,7 +101,8 @@ class Database
                 $database['db_user'],
                 $database['db_pass'],
                 $database['db_name'],
-                $database['db_host']);
+                $database['db_host'],
+                $database['db_prfx']);
         }
 
         return self::$instance;
@@ -155,7 +156,7 @@ class Database
      * @param string $queryStr Query string to execute. 
      * @return mysqli_result|bool Result from query or bool if not keeping results.
      */
-    public function query(string $queryStr) 
+    public function query(string $queryStr, bool $logQuery=false) 
     {
         // Track time required to execute the query
         $time_start = microtime(true);
@@ -184,6 +185,14 @@ class Database
             }
         }
         // If it was not an error, track queries for debugging purposes. 
+        else if($logQuery)
+        {
+            Logger::debug('Query', array(
+                'query'  => $queryStr,
+                'qtime'  => $this->query_time,
+                'qcount' => $this->query_count,
+            ));
+        }
         else
         {
             Logger::debug('Query', array(

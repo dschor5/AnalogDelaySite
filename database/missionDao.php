@@ -72,7 +72,7 @@ class MissionDao extends Dao
     {
         // Use case statements to update multiple fields in the table
         // in a single query. 
-        $queryStr = 'UPDATE mission_config SET value = ( CASE ';
+        $queryStr = "UPDATE {$this->prefix}mission_config SET value = ( CASE ";
         $qIn = array();
         foreach($data as $name => $value) 
         {

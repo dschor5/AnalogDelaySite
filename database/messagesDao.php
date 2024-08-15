@@ -76,7 +76,7 @@ class MessagesDao extends Dao
             $qConvoIds = implode(',',$convoIds);
 
             // Initialize internal mysql variables.
-            $idQueryStr = 'SET @id_hab := 0, @id_mcc := 0;';
+            $idQueryStr = "SET @id_hab := 0, @id_mcc := 0;";
             $this->database->query($idQueryStr);
             
             // Update id for messages from the perspective of the habitat
@@ -255,7 +255,7 @@ class MessagesDao extends Dao
         $qUserId  = '\''.$this->database->prepareStatement($userId).'\'';
         $qRefTime = $isCrew ? 'recv_time_hab' : 'recv_time_mcc';
 
-        $queryStr = "SELECT messages.message_id " .
+        $queryStr = "SELECT {$this->prefix}messages.message_id " .
             // "users.username, users.alias, users.is_active, " .
             // "msg_files.original_name, msg_files.server_name, msg_files.mime_type " .
             "FROM {$this->prefix}messages " .
@@ -309,19 +309,19 @@ class MessagesDao extends Dao
         $qRefTime = $isCrew ? 'recv_time_hab' : 'recv_time_mcc';
         $qLastId  = intval($lastId);
 
-        $queryStr = 'SELECT messages.*, '. 
-                        'users.username, users.alias, users.is_active, '.
-                        'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    'JOIN users ON users.user_id=messages.user_id '.
-                    'LEFT JOIN msg_status ON messages.message_id=msg_status.message_id '.
-                        'AND msg_status.user_id='.$qUserId.' '.
-                    'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.conversation_id IN ('.$qConvoIds.') '.
-                        'AND messages.message_id > '.$qLastId.' '.
-                        'AND messages.'.$qRefTime.' <= UTC_TIMESTAMP(3) '.
-                    'ORDER BY messages.'.$qRefTime.' ASC, messages.message_id ASC '.
-                    'LIMIT '.$qOffset.', 25';
+        $queryStr = "SELECT {$this->prefix}messages.*, ". 
+                        "{$this->prefix}users.username, {$this->prefix}users.alias, {$this->prefix}users.is_active, ".
+                        "{$this->prefix}msg_files.original_name, {$this->prefix}msg_files.server_name, {$this->prefix}msg_files.mime_type ".
+                    "FROM {$this->prefix}messages ".
+                    "JOIN {$this->prefix}users ON {$this->prefix}users.user_id={$this->prefix}messages.user_id ".
+                    "LEFT JOIN {$this->prefix}msg_status ON {$this->prefix}messages.message_id={$this->prefix}msg_status.message_id ".
+                        "AND {$this->prefix}msg_status.user_id=".$qUserId." ".
+                    "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ".
+                    "WHERE {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ".
+                        "AND {$this->prefix}messages.message_id > ".$qLastId." ".
+                        "AND {$this->prefix}messages.".$qRefTime." <= UTC_TIMESTAMP(3) ".
+                    "ORDER BY {$this->prefix}messages.".$qRefTime." ASC, {$this->prefix}messages.message_id ASC ".
+                    "LIMIT '.$qOffset.', 25";
         
         $messages = array();
 
@@ -364,13 +364,13 @@ class MessagesDao extends Dao
         // Build query
         $qMessageId  = '\''.$this->database->prepareStatement($messageId).'\'';
         
-        $queryStr = 'SELECT messages.*, '. 
-                        'users.username, users.alias, users.is_active, '.
-                        'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    'JOIN users ON users.user_id=messages.user_id '.
-                    'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.message_id='.$qMessageId;
+        $queryStr = "SELECT {$this->prefix}messages.*, ". 
+                        "{$this->prefix}users.username, {$this->prefix}users.alias, {$this->prefix}users.is_active, ".
+                        "{$this->prefix}msg_files.original_name, {$this->prefix}msg_files.server_name, {$this->prefix}msg_files.mime_type ".
+                    "FROM {$this->prefix}messages ".
+                    "JOIN {$this->prefix}users ON {$this->prefix}users.user_id={$this->prefix}messages.user_id ".
+                    "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ".
+                    "WHERE {$this->prefix}messages.message_id=".$qMessageId;
                     
         $message = false;
         
@@ -407,19 +407,19 @@ class MessagesDao extends Dao
         
         $this->database->query('SET @ts := UTC_TIMESTAMP(3);');
 
-        $queryStr = 'SELECT messages.*, '. 
-                        'users.username, users.alias, users.is_active, '.
-                        'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    'JOIN users ON users.user_id=messages.user_id '.
-                    'LEFT JOIN msg_status ON messages.message_id=msg_status.message_id '.
-                        'AND msg_status.user_id='.$qUserId.' '.
-                    'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.conversation_id IN ('.$qConvoIds.') '.
-                        'AND msg_status.message_id IS NOT NULL '.    
-                        'AND messages.'.$qRefTime.' <= @ts '.
-                    'ORDER BY messages.'.$qRefTime.' ASC, messages.message_id ASC '.
-                    'LIMIT '.$qOffset.', 25';
+        $queryStr = "SELECT {$this->prefix}messages.*, ". 
+                        "{$this->prefix}users.username, {$this->prefix}users.alias, {$this->prefix}users.is_active, ".
+                        "{$this->prefix}msg_files.original_name, {$this->prefix}msg_files.server_name, {$this->prefix}msg_files.mime_type ".
+                    "FROM {$this->prefix}messages ".
+                    "JOIN {$this->prefix}users ON {$this->prefix}users.user_id={$this->prefix}messages.user_id ".
+                    "LEFT JOIN {$this->prefix}msg_status ON {$this->prefix}messages.message_id={$this->prefix}msg_status.message_id ".
+                        "AND {$this->prefix}msg_status.user_id=".$qUserId." ".
+                    "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ".
+                    "WHERE {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ".
+                        "AND {$this->prefix}msg_status.message_id IS NOT NULL ".    
+                        "AND {$this->prefix}messages.".$qRefTime." <= @ts ".
+                    "ORDER BY {$this->prefix}messages.".$qRefTime." ASC, {$this->prefix}messages.message_id ASC ".
+                    "LIMIT ".$qOffset.", 25";
         
         $messages = array();
 
@@ -442,13 +442,13 @@ class MessagesDao extends Dao
         if(count($messages) > 0)
         {
             $maxMsgId = max(array_keys($messages));
-            $delStr   = 'DELETE msg_status '.
-            'FROM msg_status '.
-            'JOIN messages ON messages.message_id=msg_status.message_id '.
-            'WHERE msg_status.user_id='.$qUserId.' '.
-                'AND messages.conversation_id IN ('.$qConvoIds.') '. 
-                'AND messages.'.$qRefTime.' <= @ts '; 
-                //'AND msg_status.message_id <= '.$maxMsgId;
+            $delStr   = "DELETE {$this->prefix}msg_status ".
+            "FROM {$this->prefix}msg_status ".
+            "JOIN {$this->prefix}messages ON {$this->prefix}messages.message_id={$this->prefix}msg_status.message_id ".
+            "WHERE {$this->prefix}msg_status.user_id=".$qUserId." ".
+                "AND {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ". 
+                "AND {$this->prefix}messages.".$qRefTime." <= @ts "; 
+                //"AND msg_status.message_id <= ".$maxMsgId;
 
             $this->database->query($delStr);
         }
@@ -481,17 +481,17 @@ class MessagesDao extends Dao
         $qRefTime = $isCrew ? 'recv_time_hab' : 'recv_time_mcc';
         $qToDate   = '\''.$this->database->prepareStatement($toDate).'\'';
 
-        $queryStr = 'SELECT messages.*, '. 
-                        'users.username, users.alias, users.is_active, '.
-                        'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    'JOIN users ON users.user_id=messages.user_id '.
-                    'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.conversation_id IN ('.$qConvoIds.') '.
-                        'AND messages.'.$qRefTime.' <= '.$qToDate.' '.
-                        'AND messages.message_id < '.$qlastMsgId.' '.
-                    'ORDER BY messages.'.$qRefTime.' DESC, messages.message_id DESC '.
-                    'LIMIT 0, '.$numMsgs;
+        $queryStr = "SELECT {$this->prefix}messages.*, ". 
+                        "{$this->prefix}users.username, {$this->prefix}users.alias, {$this->prefix}users.is_active, ".
+                        "{$this->prefix}msg_files.original_name, {$this->prefix}msg_files.server_name, {$this->prefix}msg_files.mime_type ".
+                    "FROM {$this->prefix}messages ".
+                    "JOIN {$this->prefix}users ON {$this->prefix}users.user_id={$this->prefix}messages.user_id ".
+                    "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ".
+                    "WHERE {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ".
+                        "AND {$this->prefix}messages.".$qRefTime." <= ".$qToDate." ".
+                        "AND {$this->prefix}messages.message_id < ".$qlastMsgId." ".
+                    "ORDER BY {$this->prefix}messages.".$qRefTime." DESC, {$this->prefix}messages.message_id DESC ".
+                    "LIMIT 0, ".$numMsgs;
 
         $messages = array();
 
@@ -515,13 +515,13 @@ class MessagesDao extends Dao
             if(count($messages) > 0)
             {
                 $maxMsgId = max(array_keys($messages));
-                $delStr   = 'DELETE msg_status '.
-                'FROM msg_status '.
-                'JOIN messages ON messages.message_id=msg_status.message_id '.
-                'WHERE msg_status.user_id='.$qUserId.' '.
-                    'AND messages.conversation_id IN ('.$qConvoIds.') '. 
-                    'AND messages.'.$qRefTime.' <= '.$qToDate.' ';
-                    //'AND msg_status.message_id <= '.$maxMsgId;
+                $delStr   = "DELETE {$this->prefix}msg_status ".
+                "FROM {$this->prefix}msg_status ".
+                "JOIN {$this->prefix}messages ON {$this->prefix}messages.message_id={$this->prefix}msg_status.message_id ".
+                "WHERE {$this->prefix}msg_status.user_id=".$qUserId." ".
+                    "AND {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ". 
+                    "AND {$this->prefix}messages.".$qRefTime." <= ".$qToDate." ";
+                    //"AND msg_status.message_id <= ".$maxMsgId;
 
                 $this->database->query($delStr);
             }
@@ -559,16 +559,16 @@ class MessagesDao extends Dao
         // Build query that counts new new messages and number of important messages. 
         // We leave it to the applicaiton to determine if the number changed from the
         // last time the query was ran or not. 
-        $queryStr = 'SELECT messages.conversation_id, '. 
-                        'COUNT(*) AS num_new, '. 
-                        "SUM(IF(messages.type = 'important', 1, 0)) AS num_important ".
-                    'FROM messages, msg_status '.
-                    'WHERE messages.conversation_id<>'.$qConvoId.' '. 
-                        'AND msg_status.message_id=messages.message_id '.
-                        'AND msg_status.user_id='.$qUserId.' '. 
-                        'AND messages.'.$qRefTime.' <= UTC_TIMESTAMP(3) '. 
-                    'GROUP BY messages.conversation_id '.
-                    'ORDER BY messages.conversation_id';
+        $queryStr = "SELECT {$this->prefix}messages.conversation_id, ". 
+                        "COUNT(*) AS num_new, ". 
+                        "SUM(IF({$this->prefix}messages.type = 'important', 1, 0)) AS num_important ".
+                    "FROM {$this->prefix}messages, {$this->prefix}msg_status ".
+                    "WHERE {$this->prefix}messages.conversation_id<>".$qConvoId." ". 
+                        "AND {$this->prefix}msg_status.message_id={$this->prefix}messages.message_id ".
+                        "AND {$this->prefix}msg_status.user_id=".$qUserId." ". 
+                        "AND {$this->prefix}messages.".$qRefTime." <= UTC_TIMESTAMP(3) ". 
+                    "GROUP BY {$this->prefix}messages.conversation_id ".
+                    "ORDER BY {$this->prefix}messages.conversation_id";
         
         if(($result = $this->database->query($queryStr)) !== false)
         {
@@ -599,16 +599,16 @@ class MessagesDao extends Dao
         $this->startTransaction();
 
         // Delete all messags
-        $this->database->query('DELETE FROM messages');
+        $this->database->query("DELETE FROM {$this->prefix}messages");
 
         // Reset message counter
-        $this->database->query('ALTER TABLE messages AUTO_INCREMENT = 1');
+        $this->database->query("ALTER TABLE {$this->prefix}messages AUTO_INCREMENT = 1");
 
         // Delete all threads
-        $this->database->query('DELETE FROM conversations WHERE parent_conversation_id IS NOT NULL');
+        $this->database->query("DELETE FROM {$this->prefix}conversations WHERE parent_conversation_id IS NOT NULL");
 
         // Update date for date created and last message.
-        $this->database->query('UPDATE conversations SET date_created=NOW(), last_message=NOW()');
+        $this->database->query("UPDATE {$this->prefix}conversations SET date_created=NOW(), last_message=NOW()");
        
         $this->endTransaction();
     }
@@ -628,13 +628,13 @@ class MessagesDao extends Dao
         $qRefTime = $isCrew ? 'recv_time_hab' : 'recv_time_mcc';
         
         // Build query
-        $queryStr = 'SELECT messages.*, '. 
-                        'msg_files.original_name, msg_files.server_name, msg_files.mime_type '.
-                    'FROM messages '.
-                    'LEFT JOIN msg_files ON messages.message_id=msg_files.message_id '.
-                    'WHERE messages.conversation_id IN ('.$qConvoIds.') '.
-                    'ORDER BY messages.'.$qRefTime.' ASC, messages.message_id ASC '.
-                    'LIMIT '.$offset.', '.$numMsgs;
+        $queryStr = "SELECT {$this->prefix}messages.*, ". 
+                        "{$this->prefix}msg_files.original_name, {$this->prefix}msg_files.server_name, {$this->prefix}msg_files.mime_type ".
+                    "FROM {$this->prefix}messages ".
+                    "LEFT JOIN {$this->prefix}msg_files ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ".
+                    "WHERE {$this->prefix}messages.conversation_id IN (".$qConvoIds.") ".
+                    "ORDER BY {$this->prefix}messages.".$qRefTime." ASC, {$this->prefix}messages.message_id ASC ".
+                    "LIMIT ".$offset.", ".$numMsgs;
         
         $messages = array();
        
@@ -661,9 +661,9 @@ class MessagesDao extends Dao
      */
     public function countMessagesInConvo(array $convo_ids) : int 
     {
-        $queryStr = 'SELECT count(*) as num_files FROM `msg_files` '. 
-                    'JOIN messages ON messages.message_id=msg_files.message_id '. 
-                    'WHERE messages.conversation_id IN ('.join(',', $convo_ids).');';
+        $queryStr = "SELECT count(*) as num_files FROM {$this->prefix}msg_files ". 
+                    "JOIN {$this->prefix}messages ON {$this->prefix}messages.message_id={$this->prefix}msg_files.message_id ". 
+                    "WHERE {$this->prefix}messages.conversation_id IN (".join(",", $convo_ids).");";
 
         $numMsgs = 0;
 

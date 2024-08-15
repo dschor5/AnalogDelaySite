@@ -110,7 +110,7 @@ class ConversationsDao extends Dao
         // Combine all WHERE clauses together. 
         $qWhere = (count($qWhere) > 0) ? 'WHERE '.join(' AND ', $qWhere) : '';
 
-        $queryStr = 'SELECT '.$this->prefix.'conversations.*, '.
+        $queryStr = "SELECT {$this->prefix}conversations.*, ".
                         "GROUP_CONCAT( {$this->prefix}participants.user_id) AS participants_id, ".
                         "GROUP_CONCAT( {$this->prefix}users.username) AS participants_username, ".
                         "GROUP_CONCAT( {$this->prefix}users.alias) AS participants_alias, ".

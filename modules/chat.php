@@ -682,7 +682,7 @@ class ChatModule extends DefaultModule
         // Initialize conversations menu
         foreach($this->conversations as $convoId => $convo)
         {
-            if($convo->parent_conversation_id == null && $convo->countActiveParticipants() > 1)
+            if($convo->parent_conversation_id == null && $convo->countActiveParticipants() >= 1)
             {
                 $roomSelected = $this->currConversation->conversation_id == $convoId;
                 

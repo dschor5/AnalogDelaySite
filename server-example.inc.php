@@ -39,7 +39,8 @@ $database = array(
    'db_host' => '127.0.0.1',
    'db_user' => 'username',
    'db_pass' => 'password',
-   'db_name' => 'delay'
+   'db_name' => 'delay',
+   'db_prfx' => '',
 );
 
 // Other administrative settings. 
