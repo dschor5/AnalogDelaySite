@@ -1,32 +1,14 @@
-# starter
+# ECHO
 
-1. [Generate with the same files and folders](https://github.com/rundocs/starter/generate) from this repository
-2. Set up your GitHub Pages to source(`/`)
-3. Now you can view your documentation in your site
+**ECHO** is a web-based application to simulate interplanetary communication delays between two sites in analog or laboratory studies. It can be run in a closed network or over the Internet depending on the needs of the study or habitat environment where it is deployed. The application supports both public and one-on-one private conversations between users, with message types including text, audio, video, and data attachments.
 
-## site.pages
+**ECHO** was designed with features to facilitate work in high latency environments. All of these can be enabled/disabled depending on the needs of the study.
 
-<!-- prettier-ignore-start -->
+- **Message Timestamps** - Messages have a sent and expected delivery timestamp.
+- **Message Delivery Status** - All messages are marked as "In Transit" or "Delivered."
+- **Progress Bar** - A progress bar is used to show messages in transit.
+- **Out-of-Order Indicator** - Messages that crossed paths in transit are flagged with an out-of-order indicator to alert users that they should read the messages carefully to understand the context.
+- **Important Messages** - Ability to send high-priority or important messages to draw attention to them.
+- **Conversation Threads** - Users can create threads to organize conversations.
 
-| source          | link                                                           |
-| --------------- | -------------------------------------------------------------- |
-{% for page in site.pages -%}
-| {{ page.path }} | [{{ page.url | relative_url }}]({{ page.url | relative_url }}) |
-{% endfor %}
-
-<!-- prettier-ignore-end -->
-
-## Documents
-
-https://jekyll-rtd-theme.rundocs.io
-
-## Local debug
-
-```sh
-make
-make server
-```
-
-## The license
-
-The theme is available as open source under the terms of the MIT License
+Finally, since **ECHO** is designed as a research tool, it includes functionality to download archives of all conversations for post-mission analysis.

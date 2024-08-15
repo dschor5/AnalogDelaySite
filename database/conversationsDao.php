@@ -226,26 +226,21 @@ class ConversationsDao extends Dao
 
         $qUserId = '\''.$this->database->prepareStatement($userId).'\'';
 
-        $queryStr = "SELECT {$this->prefix}conversations.*, " .
-                        "GROUP_CONCAT({$this->prefix}participants.user_id) AS participants_id, " .
-                        "GROUP_CONCAT({$this->prefix}users.username) AS participants_username, " .
-                        "GROUP_CONCAT({$this->prefix}users.alias) AS participants_alias, " .
-                        "GROUP_CONCAT({$this->prefix}users.is_crew) AS participants_is_crew, " .
-                        "COUNT(DISTINCT {$this->prefix}users.is_crew) AS participants_both_sites " .
-                    "FROM {$this->prefix}conversations " .
-                    "JOIN {$this->prefix}participants ON ". 
-                        "{$this->prefix}conversations.conversation_id = ". 
-                        "{$this->prefix}participants.conversation_id " .
-                    "JOIN {$this->prefix}users ON ". 
-                        "{$this->prefix}users.user_id={$this->prefix}participants.user_id " .
-                    "WHERE {$this->prefix}conversations.conversation_id NOT IN ({$qConvoIds}) " .
-                        "AND {$this->prefix}conversations.conversation_id IN ( " .
-                            "SELECT {$this->prefix}participants.conversation_id ". 
-                            "FROM {$this->prefix}participants " .
-                            "WHERE {$this->prefix}participants.user_id={$qUserId} ) " .
-                    "GROUP BY {$this->prefix}conversations.conversation_id ". 
-                    "ORDER BY {$this->prefix}conversations.conversation_id";
-
+        $queryStr = "SELECT {$this->prefix}conversations.*, ".
+            "GROUP_CONCAT( {$this->prefix}participants.user_id) AS participants_id, ".
+            "GROUP_CONCAT( {$this->prefix}users.username) AS participants_username, ".
+            "GROUP_CONCAT( {$this->prefix}users.alias) AS participants_alias, ".
+            "GROUP_CONCAT( {$this->prefix}users.is_crew) AS participants_is_crew, ".
+            "GROUP_CONCAT( {$this->prefix}users.is_active) AS participants_is_active, ".
+            "COUNT(DISTINCT {$this->prefix}users.is_crew) AS participants_both_sites ".
+            "FROM {$this->prefix}conversations ".
+            "JOIN {$this->prefix}participants ON {$this->prefix}conversations.conversation_id = {$this->prefix}participants.conversation_id ".
+            "JOIN {$this->prefix}users ON {$this->prefix}users.user_id=participants.user_id ".
+            "WHERE {$this->prefix}conversations.conversation_id NOT IN (".$qConvoIds.") ". 
+                "AND {$this->prefix}conversations.conversation_id IN ( ".
+                    "SELECT {$this->prefix}participants.conversation_id FROM participants ".
+                    "WHERE {$this->prefix}participants.user_id=".$qUserId." ) ".
+            "GROUP BY {$this->prefix}conversations.conversation_id ORDER BY {$this->prefix}conversations.conversation_id";
         
         $conversations = array();
 

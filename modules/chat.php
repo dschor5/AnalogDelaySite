@@ -365,7 +365,7 @@ class ChatModule extends DefaultModule
         {
             $fileExt1  = 'mkv';
             $fileExt2  = '';
-            $fileNameParts = 2;
+            $numFileNameParts = 2;
             $fileMime = 'video/webm';
             $dt = new DateTime('NOW');
             $fileName = $fileType.'_'.$dt->format('YmdHisv').'.'.$fileExt1;
@@ -374,7 +374,7 @@ class ChatModule extends DefaultModule
         {
             $fileExt1  = 'mkv';
             $fileExt2  = '';
-            $fileNameParts = 2;
+            $numFileNameParts = 2;
             $fileMime = 'audio/webm';
             $dt = new DateTime('NOW');
             $fileName = $fileType.'_'.$dt->format('YmdHisv').'.'.$fileExt1;

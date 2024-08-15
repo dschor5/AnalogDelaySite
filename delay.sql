@@ -166,14 +166,12 @@ INSERT INTO `%smission_config` (`name`, `type`, `value`) VALUES
 ('feat_convo_threads',       'bool', '1'), 
 ('feat_convo_threads_all',   'bool', '1'),
 ('feat_out_of_seq',          'bool', '1'),
-('debug',                    'bool', '0'),
-('mysql_debug',              'bool', '0');
+('debug',                    'bool', '0');
 ";
 SET @sql = REPLACE(@insert_structure, '%s', @prefix);
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-
 
 SET @insert_structure = "
 INSERT INTO `%susers` (`user_id`, `username`, `alias`, `password`, `session_id`, `is_admin`, `is_crew`, `last_login`, `is_password_reset`, `preferences`) VALUES

@@ -734,7 +734,7 @@ class AdminModule extends DefaultModule
             'is_crew'  => 'Role',
             'is_admin' => 'Admin',
             'is_active' => 'Active',
-            'last_login' => 'Last Login (MCC timezone)',
+            'last_login' => 'Last Login <br/> (MCC timezone)',
             'tools'    => 'Actions'
         );
         
@@ -798,11 +798,11 @@ class AdminModule extends DefaultModule
 
             $list->addRow(array(
                 'id' => $id,
-                'username' => htmlspecialchars($user->username).' ('.htmlspecialchars($user->alias).')',
+                'username' => htmlspecialchars($user->username).' <br/> ('.htmlspecialchars($user->alias).')',
                 'is_crew' => $user->is_crew ? 'HAB' : 'MCC',
                 'is_admin' => $user->is_admin ? 'Yes' : 'No',
                 'is_active' => $user->is_active ? 'Yes' : 'No',
-                'last_login' => $user->getLastLogin(),
+                'last_login' => substr($user->getLastLogin(), 0, 16),
                 'tools' => join('&nbsp;&nbsp;', $tools),
             ));
         }

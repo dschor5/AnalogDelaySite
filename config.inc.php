@@ -6,7 +6,7 @@ ini_set('display_errors', '1');
 require_once('server.inc.php');
 
 $config = array();
-$config['echo_version'] = '4.5';
+$config['echo_version'] = '4.6';
 $config['templates_dir'] = 'templates';
 $config['modules_dir'] = 'modules';
 $config['uploads_dir'] = 'uploads';
@@ -73,6 +73,7 @@ $config['uploads_allowed'] = array(
     'image/heif' => 'heif',
     'video/quicktime' => 'mov',
     'video/x-msvideo' => 'avi',
+    'image/avif' => 'avif',
     'text/plain' => 'txt',
 );
 

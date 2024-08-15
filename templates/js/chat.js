@@ -9,6 +9,7 @@ var simplemdeOps = {
     forceSync: true, 
     toolbar: false, 
     status: false,
+    spellChecker: false,
     shortcuts: {
         "toggleCodeBlock": null, // unbind Ctrl-Alt-C
         "toggleBold": null, // disabled per request
@@ -86,6 +87,7 @@ function sendTextMessage(msgImportant) {
         },
     });
     $('#new-msg-text').attr('disabled', false);
+    
 }
 
 /**
