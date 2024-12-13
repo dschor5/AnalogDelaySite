@@ -154,7 +154,7 @@ class Database
                 'error'  => $this->db->error,
                 'trace'  => debug_backtrace(),
                 'qtime'  => $this->query_time,
-                'qcount' => $this->query_count,
+                'qcount' => $this->query_count
             ));
 
             // If enabled, throw an exception. 
@@ -169,7 +169,7 @@ class Database
             Logger::debug('Query', array(
                 'query'  => $queryStr,
                 'qtime'  => $this->query_time,
-                'qcount' => $this->query_count,
+                'qcount' => $this->query_count
             ));
         }
 

@@ -174,7 +174,7 @@ class ConversationsDao extends Dao
             'name'                   => $threadName,
             'parent_conversation_id' => $convo->conversation_id,
             'date_created'           => $currTime->getTime(),
-            'last_message'           => $currTime->getTime(),
+            'last_message'           => $currTime->getTime()
         );
 
         $this->startTransaction();
