@@ -164,8 +164,7 @@ class MessagesDao extends Dao
             $variables = array(
                 'message_id_alt' => '@id_alt:=@id_alt+1', 
                 'recv_time_hab' => 'ADDTIME(ADDDATE(UTC_TIMESTAMP(3), '.$habDelayDays.'), \''.$habDelay.'\')',
-                'recv_time_mcc' => 'ADDTIME(ADDDATE(UTC_TIMESTAMP(3), '.$mccDelayDays.'), \''.$mccDelay.'\')',
-            );
+                'recv_time_mcc' => 'ADDTIME(ADDDATE(UTC_TIMESTAMP(3), '.$mccDelayDays.'), \''.$mccDelay.'\')');
             $id = $this->insert($msgData, $variables);
 
             // If the message was successfully added to the database, then 
@@ -244,8 +243,7 @@ class MessagesDao extends Dao
                 {
                     $msgStatus[] = array(
                         'message_id' => $msgData['message_id'],
-                        'user_id' => $userId,
-                    );
+                        'user_id' => $userId);
                 }
                 $keys = array('message_id', 'user_id');
                 $msgStatusDao->insertMultiple($keys, $msgStatus);

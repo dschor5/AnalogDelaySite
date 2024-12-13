@@ -17,8 +17,7 @@ class ErrorModule extends DefaultModule
         parent::__construct($user);
         $this->subJsonRequests = array();
         $this->subHtmlRequests = array(
-            'default'      => 'showError', 
-        );
+            'default'      => 'showError');
     }
 
     /**

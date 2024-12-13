@@ -88,8 +88,7 @@ class MissionConfig
             'feat_important_msgs',      
             'feat_convo_threads',       
             'feat_convo_threads_all',   
-            'debug',            
-        );
+            'debug');
 
         // Force new query.
         $this->lastQueryTime = time() - 2 * self::QUERY_TIMEOUT;

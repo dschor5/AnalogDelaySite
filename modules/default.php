@@ -93,8 +93,7 @@ abstract class DefaultModule implements Module
             'jquery-ui.structure.css',
             'jquery-ui.theme.css', 
             'jquery-3.6.0.min.js', 
-            'jquery-ui.min.js',
-        );
+            'jquery-ui.min.js');
 
         // Merge the default and custom lists together. 
         $this->templateFiles = array_merge($defaults, $this->templateFiles);
@@ -187,15 +186,12 @@ abstract class DefaultModule implements Module
                 '/%links%/'         => $htmlLinks,
                 '/%user_location%/' => htmlspecialchars($userPlanet),
                 '/%alias%/'         => htmlspecialchars($userAlias),
-                '/%username%/'      => htmlspecialchars($userName),
-            ));
+                '/%username%/'      => htmlspecialchars($userName)));
         }
 
         return Main::loadTemplate('header.txt', array(
             '/%nav%/'           => $nav,
-            '/%user_location%/' => htmlspecialchars($userPlanet),
-            
-        ));
+            '/%user_location%/' => htmlspecialchars($userPlanet)));
     }
 
     /**
@@ -313,8 +309,7 @@ abstract class DefaultModule implements Module
                 '/%timeout-sec%/'      => $mission->login_timeout,
 
                 // Software version
-                '/%version%/'          => $config['echo_version'],
-            );
+                '/%version%/'          => $config['echo_version']);
 
             echo Main::loadTemplate('main.txt', $replace);
         }

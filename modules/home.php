@@ -20,13 +20,11 @@ class HomeModule extends DefaultModule
         $this->subJsonRequests = array(
             'reset'      => 'resetPassword',
             'login'      => 'login',
-            'heartbeat'  => 'heartbeat',
-        );
+            'heartbeat'  => 'heartbeat');
         $this->subHtmlRequests = array(
             'logout'     => 'logout',
             'checkLogin' => 'checkLogin',
-            'default'    => 'showHomepage',
-        );
+            'default'    => 'showHomepage');
     }
 
     /**

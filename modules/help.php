@@ -18,8 +18,7 @@ class HelpModule extends DefaultModule
         parent::__construct($user);
         $this->subJsonRequests = array();
         $this->subHtmlRequests = array(
-            'default'      => 'showHelpOverview', 
-        );
+            'default'      => 'showHelpOverview');
 
         $mission = MissionConfig::getInstance();
         if($mission->feat_markdown_support)

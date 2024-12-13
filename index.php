@@ -272,8 +272,7 @@ class Main
         $replace = array(
             '/%http%/'             => $server['http'],
             '/%site_url%/'         => $server['site_url'],
-            '/%templates_dir%/'    => $config['templates_dir'],         
-        );
+            '/%templates_dir%/'    => $config['templates_dir']);
         $template = preg_replace(array_keys($replace), array_values($replace), $template);
 
         return $template;

@@ -196,8 +196,7 @@ class ConversationsDao extends Dao
         {
             $participantsFields[] = array(
                 'conversation_id' => $convoId,
-                'user_id' => $userId,
-            );
+                'user_id' => $userId);
         }
         $keys = array('conversation_id', 'user_id');
         $participantsDao->insertMultiple($keys, $participantsFields);

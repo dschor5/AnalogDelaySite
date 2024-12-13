@@ -318,8 +318,7 @@ class Conversation
                       '/%archive-tz%/'   => $tz,
                       '/%title%/'        => 'ECHO Archive for '.htmlspecialchars($name),
                       '/%version%/'      => $config['echo_version'],
-                      '/%save-date%/'    => $time->getTime(),
-                ));
+                      '/%save-date%/'    => $time->getTime()));
 
             $fileName = $folderName.'.html';
             $success = $zip->addFromString($fileName, $convoStr);

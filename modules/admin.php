@@ -44,8 +44,7 @@ class AdminModule extends DefaultModule
             'backupconvo'    => 'backupConversations',
             'backuplog'      => 'backupSystemLog',
             'deletearchive'  => 'deleteArchive',  
-            'backupstatus'   => 'backupConversationStatus', 
-        );
+            'backupstatus'   => 'backupConversationStatus');
 
         $this->subHtmlRequests = array(
             // Mission settings
@@ -1088,8 +1087,7 @@ class AdminModule extends DefaultModule
         $response = array(
             'success' => true, 
             'time'    => 0, 
-            'error'   => '', 
-        );
+            'error'   => '');
 
         if(isset($missionCfg->download_status))
         {

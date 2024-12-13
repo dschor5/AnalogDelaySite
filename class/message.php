@@ -247,8 +247,7 @@ class Message
                   '/%recv-time-mcc%/'  => DelayTime::convertTimestampTimezone($this->recv_time_mcc, 'UTC', $tz),
                   '/%recv-time-hab%/'  => DelayTime::convertTimestampTimezone($this->recv_time_hab, 'UTC', $tz),
                   '/%msg%/'            => $msg,
-                  '/%important%/'      => $important,
-            ));
+                  '/%important%/'      => $important));
     }
 
     /**
@@ -322,8 +321,7 @@ class Message
             'recv_time'        => DelayTime::convertTsForJs($this->getReceivedTime($remoteDest)),
             'delivered_status' => $this->getMsgStatus($remoteDest),
             'remoteDest'       => $remoteDest,
-            'send_notification'=> ($userPerspective->user_id != $this->user_id) ? true : false,
-        );
+            'send_notification'=> ($userPerspective->user_id != $this->user_id) ? true : false);
             
         // Flag as important
         if($this->type == self::IMPORTANT) 

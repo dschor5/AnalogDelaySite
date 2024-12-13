@@ -181,8 +181,7 @@ class ChatModule extends DefaultModule
         // Get the name of the thread
         $threadName = $_POST['thread_name'] ?? '';
         $response = array(
-            'success' => true,
-        );
+            'success' => true);
 
         // Find the parent conversation to which the thread will be added.
         $currConvo = &$this->currConversation;
@@ -476,16 +475,14 @@ class ChatModule extends DefaultModule
                 'from_crew'       => ($this->user->is_crew) ? '1' : '0',
                 'conversation_id' => $this->currConversation->conversation_id,
                 'text'            => $msgText,
-                'type'            => $fileType,
-            );
+                'type'            => $fileType);
             
             // Create entry for the msg_files table. 
             $fileData = array(
                 'message_id'    => 0,
                 'server_name'   => $serverName,
                 'original_name' => $fileName,
-                'mime_type'     => $fileMime,
-            );
+                'mime_type'     => $fileMime);
 
             // Execute both database queries. 
             $messagesDao = MessagesDao::getInstance();
@@ -493,8 +490,7 @@ class ChatModule extends DefaultModule
             {
                 $result = array(
                     'success' => true, 
-                    'message_id' => $messageId,
-                );
+                    'message_id' => $messageId);
 
                 // Get the last message and return it in the ajax call.
                 if(($lastMessage = $messagesDao->getLastMessage($messageId))!== false)
@@ -560,16 +556,14 @@ class ChatModule extends DefaultModule
                 'from_crew'       => ($this->user->is_crew) ? '1' : '0',
                 'conversation_id' => $this->currConversation->conversation_id,
                 'text'            => $msgText,
-                'type'            => $msgImportant,
-            );
+                'type'            => $msgImportant);
 
             // Send message.
             if(($messageId = $messagesDao->sendMessage($this->user, $msgData)) !== false)
             {
                 $result = array(
                     'success' => true, 
-                    'message_id' => $messageId,
-                );
+                    'message_id' => $messageId);
 
                 // Get the last message and return it in the ajax call.
                 if(($lastMessage = $messagesDao->getLastMessage($messageId))!== false)
@@ -690,8 +684,7 @@ class ChatModule extends DefaultModule
                     $convoId, 
                     $convo->getName($this->user->user_id),
                     $roomSelected || $this->currConversation->parent_conversation_id == $convoId,
-                    $roomSelected,
-                );
+                    $roomSelected);
 
                 $mission = MissionConfig::getInstance();
                 if($mission->feat_convo_threads)
@@ -702,8 +695,7 @@ class ChatModule extends DefaultModule
                             $convoId,
                             $threadId,
                             htmlspecialchars($this->conversations[$threadId]->name),
-                            $this->currConversation->conversation_id == $threadId,
-                        );
+                            $this->currConversation->conversation_id == $threadId);
                     }
                 }
             }
@@ -734,8 +726,7 @@ class ChatModule extends DefaultModule
                     'convo_id'    => $convoId,
                     'thread_id'   => $threadId,
                     'thread_name' => htmlspecialchars($name),
-                    'thread_selected' => $selected,
-                )
+                    'thread_selected' => $selected)
             );
         }
     }
@@ -847,8 +838,7 @@ class ChatModule extends DefaultModule
                     $this->sendEventStream(
                         'msg', 
                         $msg->compileArray($this->user, $this->currConversation->participants_both_sites),
-                        $msgId, 
-                    );
+                        $msgId);
 
                     // Flush output to the user. 
                     while (ob_get_level() > 0) 
@@ -902,8 +892,7 @@ class ChatModule extends DefaultModule
             $this->sendEventStream(
                 'msg', 
                 $msg->compileArray($this->user, $this->currConversation->participants_both_sites),
-                $msgId, 
-            );
+                $msgId);
             
             // Flush output to the user. 
             while (ob_get_level() > 0) 
@@ -1029,8 +1018,7 @@ class ChatModule extends DefaultModule
                             'conversation_id' => $convoId,
                             'num_messages'    => $numMsgs['num_new'],
                             'num_important'   => $numMsgs['num_important'],
-                            'notif_important' => $numMsgs['notif_important'],
-                        )
+                            'notif_important' => $numMsgs['notif_important'])
                     );
                 }
             }

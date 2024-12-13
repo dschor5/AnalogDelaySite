@@ -205,8 +205,7 @@ class UsersDao extends Dao
             {
                 $newParticipants[] = array(
                     'conversation_id' => $convoId,
-                    'user_id' => $newUserId,
-                );
+                    'user_id' => $newUserId);
                 $messagesDao->newUserAccessToPrevMessages($convoId, $newUserId);
             }
             $keys = array('conversation_id', 'user_id');
@@ -220,25 +219,20 @@ class UsersDao extends Dao
                     // Create new conversation
                     $newConvoData = array(
                         'name' => $user->alias.'-'.$users[$newUserId]->alias,
-                        'parent_conversation_id' => null,
-                    );
+                        'parent_conversation_id' => null);
                     $newConvoVars = array(
                         'date_created' => 'UTC_TIMESTAMP(3)',
-                        'last_message' => 'UTC_TIMESTAMP(3)',
-                    );
+                        'last_message' => 'UTC_TIMESTAMP(3)');
                     $newConvoId = $conversationsDao->insert($newConvoData, $newConvoVars);
 
                     // Add list of participants for the new private conversation.
                     $newParticipants = array(
                         array(
                             'conversation_id' => $newConvoId,
-                            'user_id' => $newUserId,
-                        ),
+                            'user_id' => $newUserId),
                         array(
                             'conversation_id' => $newConvoId,
-                            'user_id' => $otherUserId,
-                        ),
-                    );
+                            'user_id' => $otherUserId));
                     $keys = array('conversation_id', 'user_id');
                     $participantsDao->insertMultiple($keys, $newParticipants);
                 }
